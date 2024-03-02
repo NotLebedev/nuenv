@@ -43,7 +43,7 @@ let drv = {
 let nix = {
   sandbox: $env.NIX_BUILD_TOP, # Sandbox directory
   store: $env.NIX_STORE, # Nix store root
-  debug: (envToBool $attrs.__nu_debug) # Whether `debug = true` is set in the derivation
+  debug: $attrs.__nu_debug # Whether `debug = true` is set in the derivation
 }
 
 ## Provide info about the current derivation
@@ -53,7 +53,7 @@ if $nix.debug {
   info $"Realising the (blue $drv.name) derivation for (blue $drv.system)"
 
   let numCores = ($env.NIX_BUILD_CORES | into int)
-  info $"Running on (blue $numCores) core(if ($numCores > 1) { "s" })"
+  info $"Running on (blue ($numCores | into string)) core(if ($numCores > 1) { "s" })"
 
   info $"Using Nushell (blue $nushell.version)"
 
@@ -102,7 +102,7 @@ if $numAttrs != 0 {
 
 # Copy sources into sandbox
 if $nix.debug { info "Copying sources" }
-for src in $drv.src { cp -r -f $src $nix.sandbox }
+for src in $drv.src { cp -r -f --preserve [] $src $nix.sandbox }
 
 # Set environment variables for all outputs
 if $nix.debug {
